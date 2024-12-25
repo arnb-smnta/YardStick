@@ -12,7 +12,7 @@ The application provides the following features:
 
 - **Image Generation:** Users can generate unique images by entering descriptive text prompts.
 - **Image Variations:** Users can create variations of existing images based on a provided image input.
-- **Image Inpainting:** Users can modify specific areas of an image according to new instructions (if available).
+- **Image Inpainting:** Users can modify specific areas of an image according to new instructions .
 
 ## High-Level Architecture Design
 
@@ -152,13 +152,6 @@ Content-Type: application/json
 }
 ```
 
-## Getting Started
-
-1. **Sign Up for OpenAI API Access:** Create an account on the OpenAI platform and obtain your API key.
-2. **Install Dependencies:** If applicable, install any necessary libraries (e.g., Axios for making HTTP requests).
-3. **Set Up the Project:** Clone this repository and set up your environment variables with your OpenAI API key.
-4. **Run the Application:** Start your application to interact with the DALL-E API and generate images.
-
 ## Conclusion
 
 This application demonstrates the capabilities of the DALL-E API for generating and manipulating images.
@@ -233,11 +226,13 @@ The architecture for this application includes the following components:
 
 ---
 
-## API Endpoint Documentation
+# API END-POINT DOCUMENTATION
+---
 
-### 1. **Chat Completions**
+### 1. **Chat Completions (ChatGPT)**
 - **Endpoint:** `POST /v1/chat/completions`
-- **Functionality:** Generates context-aware conversational responses.
+- **Functionality:** Generates conversation responses in a chat format.
+- **Available Model:** `gpt-3.5-turbo`
 
 **Request Example:**
 ```http
@@ -248,11 +243,11 @@ Content-Type: application/json
 {
   "model": "gpt-3.5-turbo",
   "messages": [
-    { "role": "system", "content": "You are a helpful assistant." },
-    { "role": "user", "content": "How do I create a React app?" }
+    { "role": "system", "content": "You are a financial advisor." },
+    { "role": "user", "content": "What are some tips for saving money?" }
   ],
-  "max_tokens": 150,
-  "temperature": 0.7
+  "temperature": 0.7,
+  "max_tokens": 200
 }
 ```
 
@@ -266,48 +261,180 @@ Content-Type: application/json
     {
       "message": {
         "role": "assistant",
-        "content": "To create a React app, you can use the Create React App CLI..."
+        "content": "Here are some tips for saving money..."
       },
       "finish_reason": "stop",
       "index": 0
     }
   ],
   "usage": {
-    "prompt_tokens": 25,
+    "prompt_tokens": 20,
     "completion_tokens": 50,
-    "total_tokens": 75
+    "total_tokens": 70
   }
 }
 ```
 
 ---
 
-## Getting Started
+### 2. **Text Completions**
+- **Endpoint:** `POST /v1/completions`
+- **Functionality:** Generates text completions for user-provided prompts.
+- **Available Model:** `text-davinci-003`
 
-### 1. **Prerequisites**
-- Sign up at [OpenAI](https://platform.openai.com/signup/) and get your free-tier API key.
-- Install required tools (e.g., Node.js, Axios, or Fetch).
+**Request Example:**
+```http
+POST https://api.openai.com/v1/completions
+Authorization: Bearer YOUR_API_KEY
+Content-Type: application/json
 
-### 2. **Project Setup**
-- Clone the repository:
-  ```bash
-  git clone https://github.com/your-repo/chatgpt-integration-app.git
-  ```
-- Install dependencies:
-  ```bash
-  npm install
-  ```
-- Set up your API key in a `.env` file:
-  ```env
-  OPENAI_API_KEY=your_openai_api_key
-  ```
+{
+  "model": "text-davinci-003",
+  "prompt": "Write an email to welcome a new team member.",
+  "temperature": 0.5,
+  "max_tokens": 150
+}
+```
 
-### 3. **Run the Application**
-- Start the server:
-  ```bash
-  npm start
-  ```
-- Open your browser to interact with the chatbot.
+**Response Example:**
+```json
+{
+  "id": "cmpl-xxxx",
+  "object": "text_completion",
+  "created": 1679876543,
+  "choices": [
+    {
+      "text": "Dear [Name],\nWelcome to the team! We are thrilled to have you...",
+      "index": 0,
+      "logprobs": null,
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 10,
+    "completion_tokens": 30,
+    "total_tokens": 40
+  }
+}
+```
+
+---
+
+### 3. **Moderation**
+- **Endpoint:** `POST /v1/moderations`
+- **Functionality:** Detects inappropriate or harmful content in user-provided input.
+
+**Request Example:**
+```http
+POST https://api.openai.com/v1/moderations
+Authorization: Bearer YOUR_API_KEY
+Content-Type: application/json
+
+{
+  "input": "A message containing inappropriate content."
+}
+```
+
+**Response Example:**
+```json
+{
+  "id": "modr-xxxx",
+  "model": "text-moderation-001",
+  "results": [
+    {
+      "categories": {
+        "hate": false,
+        "self-harm": false,
+        "violence": true
+      },
+      "category_scores": {
+        "hate": 0.02,
+        "self-harm": 0.01,
+        "violence": 0.98
+      },
+      "flagged": true
+    }
+  ]
+}
+```
+
+---
+
+### 4. **Embedding Generation**
+- **Endpoint:** `POST /v1/embeddings`
+- **Functionality:** Generates vector embeddings for input text, useful for tasks like semantic search or clustering.
+- **Available Model:** `text-embedding-ada-002`
+
+**Request Example:**
+```http
+POST https://api.openai.com/v1/embeddings
+Authorization: Bearer YOUR_API_KEY
+Content-Type: application/json
+
+{
+  "model": "text-embedding-ada-002",
+  "input": "OpenAI provides APIs for text generation and embeddings."
+}
+```
+
+**Response Example:**
+```json
+{
+  "object": "list",
+  "data": [
+    {
+      "object": "embedding",
+      "embedding": [0.0021, 0.0134, ...],
+      "index": 0
+    }
+  ],
+  "model": "text-embedding-ada-002",
+  "usage": {
+    "prompt_tokens": 8,
+    "total_tokens": 8
+  }
+}
+```
+
+---
+
+### 5. **Fine-Tuning (Limited Free Access)**
+- **Endpoint:** `POST /v1/fine-tunes`
+- **Functionality:** Allows fine-tuning of OpenAI models on custom datasets. 
+
+**Request Example:**
+```http
+POST https://api.openai.com/v1/fine-tunes
+Authorization: Bearer YOUR_API_KEY
+Content-Type: application/json
+
+{
+  "training_file": "file-xxxxx",
+  "model": "davinci"
+}
+```
+
+**Response Example:**
+```json
+{
+  "id": "ft-xxxx",
+  "object": "fine-tune",
+  "model": "davinci",
+  "created_at": 1679876543,
+  "status": "pending"
+}
+```
+
+---
+
+### Summary of Free-Tier APIs:
+| **API**              | **Description**                              | **Available Models**      |
+|-----------------------|----------------------------------------------|---------------------------|
+| Chat Completions      | Generates conversational responses.          | `gpt-3.5-turbo`           |
+| Text Completions      | Creates text based on prompts.               | `text-davinci-003`        |
+| Moderation            | Detects harmful or sensitive content.        | `text-moderation-001`     |
+| Embedding Generation  | Produces vector embeddings for text inputs.  | `text-embedding-ada-002`  |
+| Fine-Tuning (Limited) | Fine-tunes a model for custom datasets.      | `davinci`, `curie`, etc.  |
 
 ---
 

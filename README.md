@@ -311,7 +311,7 @@ Content-Type: application/json
 
 ---
 
-## Notes on Free Tier Usage
+## Notes on  Usage
 
 - **Model:** This grants access to `gpt-3.5-turbo`.
 - **Usage Limits:** OpenAI provides a fixed number of tokens (combined input and output) per month in the free tier. Track your usage in the [OpenAI dashboard](https://platform.openai.com/account/usage).
